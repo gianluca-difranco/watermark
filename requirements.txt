@@ -1,0 +1,6 @@
+pywavelets
+pillow
+numpy>=1.24.0
+opencv-python>=4.8.0
+matplotlib>=3.8.0
+scikit-image>=0.22.0
