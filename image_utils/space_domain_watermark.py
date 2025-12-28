@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-from PIL import Image
 import os
 from pathlib import Path
 
@@ -47,35 +46,6 @@ def apply_watermark_color(input_image_path: Path, output_dir_path: Path, waterma
 
 
     return output_path
-
-def apply_watermark(input_image_path: Path, output_dir_path: Path, watermark_image_path: Path) -> Path:
-
-
-    bw_original = cv2.imread(str(input_image_path), cv2.IMREAD_GRAYSCALE)
-
-    # === Estraggo la matrice dei bit meno significativi (LSB) originali ===
-    lsb_original = (bw_original & 1) * 255
-    lsb_original_img = Image.fromarray(lsb_original.astype(np.uint8))
-
-    # === Creo immagine con testo nero su sfondo bianco ===
-    watermark_image = cv2.imread(str(watermark_image_path), cv2.IMREAD_GRAYSCALE)
-    msb_plane = (watermark_image >> 7) & 1
-
-    # === Sostituisce i LSB del canale originale con il testo ===
-    channel_modified = (bw_original & 254) | msb_plane
-
-    # === Ricreo immagine modificata e la sua versione dei LSB ===
-    bw_modified = Image.fromarray(channel_modified.astype(np.uint8))
-    lsb_modified = (channel_modified & 1) * 255
-    lsb_modified_img = Image.fromarray(lsb_modified.astype(np.uint8))
-    # === Salva i risultati ===
-    os.makedirs(output_dir_path, exist_ok=True)
-    cv2.imwrite(f'{output_dir_path}/bw_original.png', bw_original)
-    lsb_original_img.save(f'{output_dir_path}/lsb_original.png')
-    bw_modified.save(f'{output_dir_path}/watermarked_img.png')
-    lsb_modified_img.save(f'{output_dir_path}/watermark.png')
-    return output_dir_path / 'watermarked_img.png'
-
 
 def extract_watermark(image: np.ndarray) -> np.ndarray:
     trans_lsb_original = (image & 1) * 255
